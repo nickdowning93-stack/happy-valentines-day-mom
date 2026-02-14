@@ -54,8 +54,33 @@ const LOVE_MESSAGES = [
   "Love you always! 💕🥰",
 ];
 
-// YouTube video ID for "Hate It or Love It" by The Game ft. 50 Cent
 const YOUTUBE_VIDEO_ID = "BuMBmK5uksg";
+
+// Extend Window for YouTube IFrame API
+declare global {
+  interface Window {
+    YT: {
+      Player: new (
+        el: string | HTMLElement,
+        opts: {
+          videoId: string;
+          height?: string;
+          width?: string;
+          playerVars?: Record<string, number | string>;
+          events?: Record<string, (e: { target: YouTubePlayer }) => void>;
+        }
+      ) => YouTubePlayer;
+    };
+    onYouTubeIframeAPIReady: () => void;
+  }
+}
+
+interface YouTubePlayer {
+  playVideo: () => void;
+  pauseVideo: () => void;
+  setVolume: (vol: number) => void;
+  destroy: () => void;
+}
 
 function FloatingHearts() {
   const [hearts, setHearts] = useState<
@@ -129,10 +154,65 @@ export default function Slideshow() {
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [showFinalMessage, setShowFinalMessage] = useState(false);
   const [musicStarted, setMusicStarted] = useState(false);
+  const [playerReady, setPlayerReady] = useState(false);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const iframeRef = useRef<HTMLIFrameElement>(null);
+  const playerRef = useRef<YouTubePlayer | null>(null);
 
   const photos = PHOTOS;
+
+  // Load YouTube IFrame API on mount and create player immediately
+  useEffect(() => {
+    // If API already loaded (e.g. hot reload), create player right away
+    if (window.YT && window.YT.Player) {
+      createPlayer();
+      return;
+    }
+
+    window.onYouTubeIframeAPIReady = () => {
+      createPlayer();
+    };
+
+    const tag = document.createElement("script");
+    tag.src = "https://www.youtube.com/iframe_api";
+    document.head.appendChild(tag);
+
+    function createPlayer() {
+      if (playerRef.current) return;
+      playerRef.current = new window.YT.Player("yt-player", {
+        videoId: YOUTUBE_VIDEO_ID,
+        height: "1",
+        width: "1",
+        playerVars: {
+          autoplay: 0,
+          loop: 1,
+          playlist: YOUTUBE_VIDEO_ID,
+          playsinline: 1, // Critical for iOS - prevents fullscreen
+          controls: 0,
+          disablekb: 1,
+          fs: 0,
+          modestbranding: 1,
+          rel: 0,
+        },
+        events: {
+          onReady: (e) => {
+            e.target.setVolume(70);
+            setPlayerReady(true);
+          },
+        },
+      });
+    }
+
+    return () => {
+      if (playerRef.current) {
+        try {
+          playerRef.current.destroy();
+        } catch {
+          // ignore
+        }
+        playerRef.current = null;
+      }
+    };
+  }, []);
 
   const nextSlide = useCallback(() => {
     if (photos.length === 0) return;
@@ -154,10 +234,16 @@ export default function Slideshow() {
     }, 500);
   }, [photos.length]);
 
+  // Start slideshow AND play music in the same tap gesture (critical for iOS)
   const startSlideshow = () => {
     setCurrentSlide(0);
     setMusicStarted(true);
     intervalRef.current = setInterval(nextSlide, 4000);
+
+    // Play immediately in the user gesture call stack
+    if (playerRef.current) {
+      playerRef.current.playVideo();
+    }
   };
 
   useEffect(() => {
@@ -172,6 +258,26 @@ export default function Slideshow() {
       intervalRef.current = setInterval(nextSlide, 4000);
     }
   }, [currentSlide, musicStarted, showFinalMessage, nextSlide]);
+
+  // The YouTube player container - always rendered, positioned off-screen on iOS
+  // iOS requires the iframe to have real dimensions and not be display:none
+  const ytPlayer = (
+    <div
+      style={{
+        position: "fixed",
+        bottom: "-10px",
+        right: "-10px",
+        width: "1px",
+        height: "1px",
+        overflow: "hidden",
+        opacity: 0.01,
+        pointerEvents: "none",
+        zIndex: -1,
+      }}
+    >
+      <div id="yt-player" />
+    </div>
+  );
 
   // Intro screen
   if (currentSlide === -1) {
@@ -191,6 +297,7 @@ export default function Slideshow() {
       >
         <FloatingHearts />
         <XOXOCorners />
+        {ytPlayer}
 
         <div
           style={{
@@ -245,31 +352,36 @@ export default function Slideshow() {
             className="bounce-in"
             style={{
               animationDelay: "1s",
-              background: "linear-gradient(135deg, #e63946, #ff69b4)",
+              background: playerReady
+                ? "linear-gradient(135deg, #e63946, #ff69b4)"
+                : "linear-gradient(135deg, #ccc, #aaa)",
               color: "white",
               border: "none",
               padding: "18px 50px",
               fontSize: "22px",
               fontWeight: "bold",
               borderRadius: "50px",
-              cursor: "pointer",
-              boxShadow:
-                "0 4px 20px rgba(230, 57, 70, 0.4), 0 0 40px rgba(255, 105, 180, 0.2)",
+              cursor: playerReady ? "pointer" : "wait",
+              boxShadow: playerReady
+                ? "0 4px 20px rgba(230, 57, 70, 0.4), 0 0 40px rgba(255, 105, 180, 0.2)"
+                : "none",
               transition: "all 0.3s ease",
               fontFamily: "Georgia, serif",
             }}
             onMouseEnter={(e) => {
+              if (!playerReady) return;
               e.currentTarget.style.transform = "scale(1.1)";
               e.currentTarget.style.boxShadow =
                 "0 6px 30px rgba(230, 57, 70, 0.6), 0 0 60px rgba(255, 105, 180, 0.3)";
             }}
             onMouseLeave={(e) => {
+              if (!playerReady) return;
               e.currentTarget.style.transform = "scale(1)";
               e.currentTarget.style.boxShadow =
                 "0 4px 20px rgba(230, 57, 70, 0.4), 0 0 40px rgba(255, 105, 180, 0.2)";
             }}
           >
-            ▶ Start the Show! 💖
+            {playerReady ? "▶ Start the Show! 💖" : "Loading... 💖"}
           </button>
 
           <div
@@ -307,15 +419,7 @@ export default function Slideshow() {
       >
         <FloatingHearts />
         <XOXOCorners />
-
-        {/* Hidden YouTube player keeps playing */}
-        <iframe
-          ref={iframeRef}
-          style={{ position: "absolute", width: 0, height: 0, border: "none", opacity: 0 }}
-          src={`https://www.youtube.com/embed/${YOUTUBE_VIDEO_ID}?autoplay=1&loop=1&playlist=${YOUTUBE_VIDEO_ID}&start=0`}
-          allow="autoplay"
-          title="music"
-        />
+        {ytPlayer}
 
         <div
           style={{
@@ -433,17 +537,7 @@ export default function Slideshow() {
     >
       <FloatingHearts />
       <XOXOCorners />
-
-      {/* Hidden YouTube player for music */}
-      {musicStarted && (
-        <iframe
-          ref={iframeRef}
-          style={{ position: "fixed", width: 0, height: 0, border: "none", opacity: 0, pointerEvents: "none" }}
-          src={`https://www.youtube.com/embed/${YOUTUBE_VIDEO_ID}?autoplay=1&loop=1&playlist=${YOUTUBE_VIDEO_ID}`}
-          allow="autoplay"
-          title="music"
-        />
-      )}
+      {ytPlayer}
 
       {/* Top bar */}
       <div
