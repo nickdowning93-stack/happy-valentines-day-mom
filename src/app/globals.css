@@ -1,26 +1,230 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --valentine-pink: #ff69b4;
+  --valentine-red: #e63946;
+  --valentine-deep: #c1121f;
+  --valentine-light: #fff0f3;
+  --valentine-gold: #ffd700;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'Georgia', 'Times New Roman', serif;
+  overflow-x: hidden;
+}
+
+/* Floating hearts animation */
+@keyframes floatUp {
+  0% {
+    transform: translateY(100vh) rotate(0deg) scale(0.5);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 0.8;
+  }
+  100% {
+    transform: translateY(-10vh) rotate(360deg) scale(1.2);
+    opacity: 0;
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.08);
+  }
+}
+
+@keyframes bigPulse {
+  0%, 100% {
+    transform: scale(1);
+    filter: drop-shadow(0 0 20px rgba(230, 57, 70, 0.5));
+  }
+  50% {
+    transform: scale(1.05);
+    filter: drop-shadow(0 0 40px rgba(230, 57, 70, 0.8));
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% center;
+  }
+  100% {
+    background-position: 200% center;
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes sparkle {
+  0%, 100% {
+    opacity: 0;
+    transform: scale(0) rotate(0deg);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1) rotate(180deg);
+  }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: scale(1.1);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes slideOut {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+}
+
+@keyframes bounceIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.3);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  70% {
+    transform: scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes xoxoFloat {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+    opacity: 0.3;
+  }
+  25% {
+    transform: translateY(-15px) rotate(5deg);
+    opacity: 0.6;
+  }
+  50% {
+    transform: translateY(-5px) rotate(-3deg);
+    opacity: 0.4;
+  }
+  75% {
+    transform: translateY(-20px) rotate(8deg);
+    opacity: 0.5;
+  }
+}
+
+.floating-element {
+  position: fixed;
+  pointer-events: none;
+  z-index: 0;
+  animation: floatUp linear infinite;
+}
+
+.heart-clickable {
+  cursor: pointer;
+  animation: bigPulse 1.5s ease-in-out infinite;
+  transition: all 0.3s ease;
+}
+
+.heart-clickable:hover {
+  transform: scale(1.15) !important;
+  filter: drop-shadow(0 0 60px rgba(230, 57, 70, 1)) !important;
+}
+
+.shimmer-text {
+  background: linear-gradient(
+    90deg,
+    var(--valentine-red),
+    var(--valentine-pink),
+    var(--valentine-gold),
+    var(--valentine-pink),
+    var(--valentine-red)
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shimmer 3s linear infinite;
+}
+
+.xoxo-bg {
+  animation: xoxoFloat 6s ease-in-out infinite;
+}
+
+/* Slideshow styles */
+.slide-enter {
+  animation: slideIn 0.8s ease-out forwards;
+}
+
+.slide-exit {
+  animation: slideOut 0.5s ease-in forwards;
+}
+
+.bounce-in {
+  animation: bounceIn 0.8s ease-out forwards;
+}
+
+.fade-in-up {
+  animation: fadeInUp 1s ease-out forwards;
+}
+
+/* Photo frame */
+.photo-frame {
+  border: 8px solid var(--valentine-pink);
+  border-radius: 16px;
+  box-shadow:
+    0 0 20px rgba(255, 105, 180, 0.3),
+    0 0 40px rgba(230, 57, 70, 0.1),
+    inset 0 0 20px rgba(255, 105, 180, 0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+.photo-frame::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: 16px;
+  padding: 2px;
+  background: linear-gradient(45deg, var(--valentine-red), var(--valentine-pink), var(--valentine-gold), var(--valentine-pink), var(--valentine-red));
+  background-size: 400% 400%;
+  animation: shimmer 4s linear infinite;
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  z-index: 1;
 }
