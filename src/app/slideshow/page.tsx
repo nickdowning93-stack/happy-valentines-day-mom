@@ -3,7 +3,6 @@
 import { useEffect, useState, useRef, useCallback } from "react";
 import Image from "next/image";
 
-// Photo captions - customize these for each photo!
 const PHOTOS = [
   { src: "/photos/1.jpg", caption: "Johnny & James" },
   { src: "/photos/2.jpg", caption: "Your favorite boys!" },
@@ -13,18 +12,50 @@ const PHOTOS = [
   { src: "/photos/6.jpg", caption: "Our best smiles!" },
   { src: "/photos/7.jpg", caption: "Just for you, Mom!" },
   { src: "/photos/8.jpg", caption: "We love you!" },
+  { src: "/photos/9.jpg", caption: "Partners in crime!" },
+  { src: "/photos/10.jpg", caption: "All smiles for you!" },
+  { src: "/photos/11.jpg", caption: "The dream team!" },
+  { src: "/photos/12.jpg", caption: "Making memories!" },
+  { src: "/photos/13.jpg", caption: "Two peas in a pod!" },
+  { src: "/photos/14.jpg", caption: "Adventure time!" },
+  { src: "/photos/15.jpg", caption: "Goofballs!" },
+  { src: "/photos/16.jpg", caption: "Sending you love!" },
+  { src: "/photos/17.jpg", caption: "Besties forever!" },
+  { src: "/photos/18.jpg", caption: "Too cool for school!" },
+  { src: "/photos/19.jpg", caption: "Brothers for life!" },
+  { src: "/photos/20.jpg", caption: "Our hearts are yours!" },
+  { src: "/photos/21.jpg", caption: "Living our best life!" },
+  { src: "/photos/22.jpg", caption: "Cheese!" },
+  { src: "/photos/23.jpg", caption: "Little heartbreakers!" },
+  { src: "/photos/24.jpg", caption: "The boys are back!" },
+  { src: "/photos/25.jpg", caption: "Nothing but love!" },
+  { src: "/photos/26.jpg", caption: "Forever your boys!" },
+  { src: "/photos/27.jpg", caption: "Smile for Mom!" },
+  { src: "/photos/28.jpg", caption: "XOXO from us!" },
+  { src: "/photos/29.jpg", caption: "Can't stop, won't stop!" },
+  { src: "/photos/30.jpg", caption: "Love you to the moon!" },
 ];
 
 const LOVE_MESSAGES = [
   "We love you so much! 💖",
-  "Best grandma ever! 🥰",
+  "Best Mom ever! 🥰",
   "XOXO forever! 💋",
   "You're the greatest! ❤️",
   "Hugs from your boys! 🤗",
   "Sending all our love! 💕",
   "You mean the world to us! 🌎💖",
   "Our #1 Mom! 🏆❤️",
+  "You're our everything! 💝",
+  "Can't love you more! 😘",
+  "Kisses from the boys! 💋💋",
+  "You make us smile! 😊❤️",
+  "Mom = Superhero! 🦸‍♀️💖",
+  "We're so lucky! 🍀❤️",
+  "Love you always! 💕🥰",
 ];
+
+// YouTube video ID for "Hate It or Love It" by The Game ft. 50 Cent
+const YOUTUBE_VIDEO_ID = "BuMBmK5uksg";
 
 function FloatingHearts() {
   const [hearts, setHearts] = useState<
@@ -67,99 +98,41 @@ function FloatingHearts() {
 function XOXOCorners() {
   return (
     <>
-      <div
-        style={{
-          position: "fixed",
-          top: "20px",
-          left: "20px",
-          fontSize: "24px",
-          color: "rgba(230, 57, 70, 0.4)",
-          fontWeight: "bold",
-          fontFamily: "Georgia, serif",
-          pointerEvents: "none",
-          zIndex: 5,
-        }}
-      >
-        XOXO
-      </div>
-      <div
-        style={{
-          position: "fixed",
-          top: "20px",
-          right: "20px",
-          fontSize: "24px",
-          color: "rgba(230, 57, 70, 0.4)",
-          fontWeight: "bold",
-          fontFamily: "Georgia, serif",
-          pointerEvents: "none",
-          zIndex: 5,
-        }}
-      >
-        XOXO
-      </div>
-      <div
-        style={{
-          position: "fixed",
-          bottom: "20px",
-          left: "20px",
-          fontSize: "24px",
-          color: "rgba(230, 57, 70, 0.4)",
-          fontWeight: "bold",
-          fontFamily: "Georgia, serif",
-          pointerEvents: "none",
-          zIndex: 5,
-        }}
-      >
-        XOXO
-      </div>
-      <div
-        style={{
-          position: "fixed",
-          bottom: "20px",
-          right: "20px",
-          fontSize: "24px",
-          color: "rgba(230, 57, 70, 0.4)",
-          fontWeight: "bold",
-          fontFamily: "Georgia, serif",
-          pointerEvents: "none",
-          zIndex: 5,
-        }}
-      >
-        XOXO
-      </div>
+      {[
+        { top: "20px", left: "20px" },
+        { top: "20px", right: "20px" },
+        { bottom: "20px", left: "20px" },
+        { bottom: "20px", right: "20px" },
+      ].map((pos, i) => (
+        <div
+          key={i}
+          style={{
+            position: "fixed",
+            ...pos,
+            fontSize: "24px",
+            color: "rgba(230, 57, 70, 0.4)",
+            fontWeight: "bold",
+            fontFamily: "Georgia, serif",
+            pointerEvents: "none",
+            zIndex: 5,
+          }}
+        >
+          XOXO
+        </div>
+      ))}
     </>
   );
 }
 
 export default function Slideshow() {
-  const [currentSlide, setCurrentSlide] = useState(-1); // -1 = intro screen
+  const [currentSlide, setCurrentSlide] = useState(-1);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [showFinalMessage, setShowFinalMessage] = useState(false);
   const [musicStarted, setMusicStarted] = useState(false);
-  const [validPhotos, setValidPhotos] = useState<typeof PHOTOS>([]);
-  const [photosLoaded, setPhotosLoaded] = useState(false);
-  const audioRef = useRef<HTMLAudioElement>(null);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const iframeRef = useRef<HTMLIFrameElement>(null);
 
-  // Check which photos actually exist
-  useEffect(() => {
-    async function checkPhotos() {
-      const valid: typeof PHOTOS = [];
-      for (const photo of PHOTOS) {
-        try {
-          const res = await fetch(photo.src, { method: "HEAD" });
-          if (res.ok) valid.push(photo);
-        } catch {
-          // photo doesn't exist, skip
-        }
-      }
-      setValidPhotos(valid.length > 0 ? valid : PHOTOS);
-      setPhotosLoaded(true);
-    }
-    checkPhotos();
-  }, []);
-
-  const photos = validPhotos;
+  const photos = PHOTOS;
 
   const nextSlide = useCallback(() => {
     if (photos.length === 0) return;
@@ -169,11 +142,10 @@ export default function Slideshow() {
         const next = prev + 1;
         if (next >= photos.length) {
           setShowFinalMessage(true);
-          // After showing final message, restart loop
           setTimeout(() => {
             setShowFinalMessage(false);
             setCurrentSlide(0);
-          }, 6000);
+          }, 8000);
           return prev;
         }
         return next;
@@ -185,16 +157,6 @@ export default function Slideshow() {
   const startSlideshow = () => {
     setCurrentSlide(0);
     setMusicStarted(true);
-
-    // Start music
-    if (audioRef.current) {
-      audioRef.current.volume = 0.6;
-      audioRef.current.play().catch(() => {
-        // Autoplay might be blocked, that's ok
-      });
-    }
-
-    // Auto-advance slides every 4 seconds
     intervalRef.current = setInterval(nextSlide, 4000);
   };
 
@@ -204,7 +166,6 @@ export default function Slideshow() {
     };
   }, []);
 
-  // Restart interval when photos change (loop restart)
   useEffect(() => {
     if (currentSlide === 0 && musicStarted && !showFinalMessage) {
       if (intervalRef.current) clearInterval(intervalRef.current);
@@ -212,7 +173,7 @@ export default function Slideshow() {
     }
   }, [currentSlide, musicStarted, showFinalMessage, nextSlide]);
 
-  // Intro screen - "Let the show begin!"
+  // Intro screen
   if (currentSlide === -1) {
     return (
       <div
@@ -230,7 +191,6 @@ export default function Slideshow() {
       >
         <FloatingHearts />
         <XOXOCorners />
-        <audio ref={audioRef} src="/music/song.mp3" loop />
 
         <div
           style={{
@@ -265,7 +225,7 @@ export default function Slideshow() {
               animationDelay: "0.6s",
             }}
           >
-            &quot;Hate It or Love It&quot; - The Game ft. 50 Cent
+            🎶 &quot;Hate It or Love It&quot; - The Game ft. 50 Cent 🎶
           </p>
           <p
             className="fade-in-up"
@@ -280,41 +240,37 @@ export default function Slideshow() {
             &quot;They say you can&apos;t turn a bad girl good, but once a good girl&apos;s gone bad, she&apos;s gone forever...&quot;
           </p>
 
-          {!photosLoaded ? (
-            <div style={{ color: "#e63946", fontSize: "18px" }}>Loading...</div>
-          ) : (
-            <button
-              onClick={startSlideshow}
-              className="bounce-in"
-              style={{
-                animationDelay: "1s",
-                background: "linear-gradient(135deg, #e63946, #ff69b4)",
-                color: "white",
-                border: "none",
-                padding: "18px 50px",
-                fontSize: "22px",
-                fontWeight: "bold",
-                borderRadius: "50px",
-                cursor: "pointer",
-                boxShadow:
-                  "0 4px 20px rgba(230, 57, 70, 0.4), 0 0 40px rgba(255, 105, 180, 0.2)",
-                transition: "all 0.3s ease",
-                fontFamily: "Georgia, serif",
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.transform = "scale(1.1)";
-                e.currentTarget.style.boxShadow =
-                  "0 6px 30px rgba(230, 57, 70, 0.6), 0 0 60px rgba(255, 105, 180, 0.3)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = "scale(1)";
-                e.currentTarget.style.boxShadow =
-                  "0 4px 20px rgba(230, 57, 70, 0.4), 0 0 40px rgba(255, 105, 180, 0.2)";
-              }}
-            >
-              ▶ Start the Show! 💖
-            </button>
-          )}
+          <button
+            onClick={startSlideshow}
+            className="bounce-in"
+            style={{
+              animationDelay: "1s",
+              background: "linear-gradient(135deg, #e63946, #ff69b4)",
+              color: "white",
+              border: "none",
+              padding: "18px 50px",
+              fontSize: "22px",
+              fontWeight: "bold",
+              borderRadius: "50px",
+              cursor: "pointer",
+              boxShadow:
+                "0 4px 20px rgba(230, 57, 70, 0.4), 0 0 40px rgba(255, 105, 180, 0.2)",
+              transition: "all 0.3s ease",
+              fontFamily: "Georgia, serif",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = "scale(1.1)";
+              e.currentTarget.style.boxShadow =
+                "0 6px 30px rgba(230, 57, 70, 0.6), 0 0 60px rgba(255, 105, 180, 0.3)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = "scale(1)";
+              e.currentTarget.style.boxShadow =
+                "0 4px 20px rgba(230, 57, 70, 0.4), 0 0 40px rgba(255, 105, 180, 0.2)";
+            }}
+          >
+            ▶ Start the Show! 💖
+          </button>
 
           <div
             className="fade-in-up"
@@ -351,6 +307,15 @@ export default function Slideshow() {
       >
         <FloatingHearts />
         <XOXOCorners />
+
+        {/* Hidden YouTube player keeps playing */}
+        <iframe
+          ref={iframeRef}
+          style={{ position: "absolute", width: 0, height: 0, border: "none", opacity: 0 }}
+          src={`https://www.youtube.com/embed/${YOUTUBE_VIDEO_ID}?autoplay=1&loop=1&playlist=${YOUTUBE_VIDEO_ID}&start=0`}
+          allow="autoplay"
+          title="music"
+        />
 
         <div
           style={{
@@ -469,6 +434,17 @@ export default function Slideshow() {
       <FloatingHearts />
       <XOXOCorners />
 
+      {/* Hidden YouTube player for music */}
+      {musicStarted && (
+        <iframe
+          ref={iframeRef}
+          style={{ position: "fixed", width: 0, height: 0, border: "none", opacity: 0, pointerEvents: "none" }}
+          src={`https://www.youtube.com/embed/${YOUTUBE_VIDEO_ID}?autoplay=1&loop=1&playlist=${YOUTUBE_VIDEO_ID}`}
+          allow="autoplay"
+          title="music"
+        />
+      )}
+
       {/* Top bar */}
       <div
         style={{
@@ -500,7 +476,7 @@ export default function Slideshow() {
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
-          gap: "20px",
+          gap: "16px",
           maxWidth: "600px",
           width: "100%",
           marginTop: "60px",
@@ -539,20 +515,7 @@ export default function Slideshow() {
             fill
             style={{ objectFit: "cover", borderRadius: "8px" }}
             sizes="(max-width: 600px) 100vw, 500px"
-            onError={(e) => {
-              // If image fails to load, show a placeholder heart
-              const target = e.target as HTMLImageElement;
-              target.style.display = "none";
-              const parent = target.parentElement;
-              if (parent && !parent.querySelector(".placeholder-heart")) {
-                const placeholder = document.createElement("div");
-                placeholder.className = "placeholder-heart";
-                placeholder.style.cssText =
-                  "display:flex;align-items:center;justify-content:center;width:100%;height:100%;font-size:80px;background:linear-gradient(135deg,#fff0f3,#ffd6e0);border-radius:8px;";
-                placeholder.textContent = "📸❤️";
-                parent.appendChild(placeholder);
-              }
-            }}
+            priority
           />
         </div>
 
@@ -570,37 +533,32 @@ export default function Slideshow() {
           {currentPhoto.caption}
         </div>
 
-        {/* Slide counter */}
+        {/* Slide progress bar */}
         <div
           style={{
-            display: "flex",
-            gap: "8px",
-            justifyContent: "center",
-            flexWrap: "wrap",
+            width: "100%",
+            maxWidth: "400px",
+            height: "6px",
+            background: "rgba(230, 57, 70, 0.15)",
+            borderRadius: "3px",
+            overflow: "hidden",
           }}
         >
-          {photos.map((_, i) => (
-            <div
-              key={i}
-              style={{
-                width: "12px",
-                height: "12px",
-                borderRadius: "50%",
-                background:
-                  i === currentSlide
-                    ? "#e63946"
-                    : "rgba(230, 57, 70, 0.2)",
-                transition: "all 0.3s ease",
-                transform: i === currentSlide ? "scale(1.3)" : "scale(1)",
-              }}
-            />
-          ))}
+          <div
+            style={{
+              width: `${((currentSlide + 1) / photos.length) * 100}%`,
+              height: "100%",
+              background: "linear-gradient(90deg, #e63946, #ff69b4)",
+              borderRadius: "3px",
+              transition: "width 0.5s ease",
+            }}
+          />
         </div>
 
         {/* XOXO bottom */}
         <div
           style={{
-            fontSize: "22px",
+            fontSize: "18px",
             letterSpacing: "8px",
             color: "rgba(230, 57, 70, 0.5)",
             fontWeight: "bold",
@@ -633,6 +591,7 @@ export default function Slideshow() {
               fontSize: "16px",
               fontWeight: "bold",
               transition: "all 0.3s",
+              fontFamily: "Georgia, serif",
             }}
             onMouseEnter={(e) => {
               e.currentTarget.style.background = "#e63946";
@@ -646,7 +605,7 @@ export default function Slideshow() {
             ← Prev
           </button>
 
-          <span style={{ color: "#e63946", fontWeight: "bold" }}>
+          <span style={{ color: "#e63946", fontWeight: "bold", fontSize: "14px" }}>
             {currentSlide + 1} / {photos.length}
           </span>
 
@@ -666,6 +625,7 @@ export default function Slideshow() {
               fontSize: "16px",
               fontWeight: "bold",
               transition: "all 0.3s",
+              fontFamily: "Georgia, serif",
             }}
             onMouseEnter={(e) => {
               e.currentTarget.style.background = "#e63946";
