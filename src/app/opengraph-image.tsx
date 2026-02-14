@@ -1,7 +1,7 @@
 import { ImageResponse } from "next/og";
 
 export const runtime = "edge";
-export const alt = "Happy Valentine's Day, Mom! From Johnny & James";
+export const alt = "Happy Valentine's Day, Nana! From Johnny & James";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -96,7 +96,7 @@ export default function Image() {
           Happy Valentine&apos;s Day
         </div>
 
-        {/* Mom */}
+        {/* Nana */}
         <div
           style={{
             fontSize: "64px",
@@ -108,7 +108,7 @@ export default function Image() {
             gap: "10px",
           }}
         >
-          Mom! 💖
+          Nana! 💖
         </div>
 
         {/* Kisses divider */}
@@ -125,7 +125,7 @@ export default function Image() {
             display: "flex",
           }}
         >
-          From your favorite nephews
+          From your favorite grandsons
         </div>
 
         {/* Names */}

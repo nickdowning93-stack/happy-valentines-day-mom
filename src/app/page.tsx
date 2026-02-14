@@ -222,7 +222,7 @@ export default function Home() {
             textShadow: "0 2px 15px rgba(230, 57, 70, 0.3)",
           }}
         >
-          Mom! 💖
+          Nana! 💖
         </h2>
 
         {/* Divider kisses */}

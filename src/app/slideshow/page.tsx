@@ -10,7 +10,7 @@ const PHOTOS = [
   { src: "/photos/4.jpg", caption: "Hugs and kisses!" },
   { src: "/photos/5.jpg", caption: "Double trouble!" },
   { src: "/photos/6.jpg", caption: "Our best smiles!" },
-  { src: "/photos/7.jpg", caption: "Just for you, Mom!" },
+  { src: "/photos/7.jpg", caption: "Just for you, Nana!" },
   { src: "/photos/8.jpg", caption: "We love you!" },
   { src: "/photos/9.jpg", caption: "Partners in crime!" },
   { src: "/photos/10.jpg", caption: "All smiles for you!" },
@@ -30,7 +30,7 @@ const PHOTOS = [
   { src: "/photos/24.jpg", caption: "The boys are back!" },
   { src: "/photos/25.jpg", caption: "Nothing but love!" },
   { src: "/photos/26.jpg", caption: "Forever your boys!" },
-  { src: "/photos/27.jpg", caption: "Smile for Mom!" },
+  { src: "/photos/27.jpg", caption: "Smile for Nana!" },
   { src: "/photos/28.jpg", caption: "XOXO from us!" },
   { src: "/photos/29.jpg", caption: "Can't stop, won't stop!" },
   { src: "/photos/30.jpg", caption: "Love you to the moon!" },
@@ -38,18 +38,18 @@ const PHOTOS = [
 
 const LOVE_MESSAGES = [
   "We love you so much! 💖",
-  "Best Mom ever! 🥰",
+  "Best Nana ever! 🥰",
   "XOXO forever! 💋",
   "You're the greatest! ❤️",
   "Hugs from your boys! 🤗",
   "Sending all our love! 💕",
   "You mean the world to us! 🌎💖",
-  "Our #1 Mom! 🏆❤️",
+  "Our #1 Nana! 🏆❤️",
   "You're our everything! 💝",
   "Can't love you more! 😘",
   "Kisses from the boys! 💋💋",
   "You make us smile! 😊❤️",
-  "Mom = Superhero! 🦸‍♀️💖",
+  "Nana = Superhero! 🦸‍♀️💖",
   "We're so lucky! 🍀❤️",
   "Love you always! 💕🥰",
 ];
@@ -237,7 +237,7 @@ export default function Slideshow() {
               opacity: 0.7,
             }}
           >
-            &quot;They say you can&apos;t turn a bad girl good, but once a good girl&apos;s gone bad, she&apos;s gone forever...&quot;
+            &quot;Hate it or love it, the underdog&apos;s on top... and Nana, you&apos;re always on top of our hearts!&quot;
           </p>
 
           <button
@@ -356,7 +356,7 @@ export default function Slideshow() {
               animationDelay: "0.6s",
             }}
           >
-            From Your Favorite Nephews
+            From Your Favorite Grandsons
           </h2>
 
           <div

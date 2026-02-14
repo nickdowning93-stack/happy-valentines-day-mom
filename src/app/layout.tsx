@@ -11,24 +11,24 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: "Happy Valentine's Day, Mom!",
+  title: "Happy Valentine's Day, Nana!",
   description:
-    "A special Valentine's Day surprise from your favorite nephews Johnny & James. Click to see our slideshow!",
+    "A special Valentine's Day surprise from your favorite grandsons Johnny & James. Click to see our slideshow!",
   metadataBase: new URL(siteUrl),
   openGraph: {
-    title: "Happy Valentine's Day, Mom! 💖",
+    title: "Happy Valentine's Day, Nana! 💖",
     description:
-      "Your favorite nephews Johnny & James have a special Valentine's surprise for you! XOXO 💋",
+      "Your favorite grandsons Johnny & James have a special Valentine's surprise for you! XOXO 💋",
     url: siteUrl,
-    siteName: "Happy Valentine's Day, Mom!",
+    siteName: "Happy Valentine's Day, Nana!",
     type: "website",
     locale: "en_US",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Happy Valentine's Day, Mom! 💖",
+    title: "Happy Valentine's Day, Nana! 💖",
     description:
-      "Your favorite nephews Johnny & James have a special Valentine's surprise for you! XOXO 💋",
+      "Your favorite grandsons Johnny & James have a special Valentine's surprise for you! XOXO 💋",
   },
   other: {
     "apple-mobile-web-app-capable": "yes",
